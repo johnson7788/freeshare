@@ -1,5 +1,5 @@
-name: freeshare
-description: "Share Files by HTTP"
+name: FreeShare
+description: "FreeShare"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -39,6 +39,7 @@ dependencies:
   path: ^1.8.0
   mime: ^1.0.4
   permission_handler: ^10.2.0
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
@@ -92,3 +93,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png" # 设置应用图标
+  adaptive_icon_foreground: "assets/icon/app_icon.png" #设置前景图标
+  adaptive_icon_background: "#5F8F3C" # 设置浅蓝色背景
+  remove_alpha_ios: true

@@ -32,7 +32,8 @@ class _FileSharingScreenState extends State<FileSharingScreen> {
   final int _port = 8080;
 
   Future<void> _pickDirectory() async {
-    final status = await Permission.storage.request();
+    final status = await Permission.manageExternalStorage.request();
+    print("Storage permission status: ${status.toString()}"); // 添加日志输出
     if (!status.isGranted) {
       _showSnackBar("需要存储权限");
       return;
@@ -98,12 +99,20 @@ class _FileSharingScreenState extends State<FileSharingScreen> {
         return;
       }
 
-      final entity = File(safePath);
-      if (await entity.exists()) {
-        if ((await FileSystemEntity.type(safePath)) == FileSystemEntityType.directory) {
+      final entityType = await FileSystemEntity.type(safePath); // 获取实体类型
+
+      if (entityType != FileSystemEntityType.notFound) { // 检查实体是否存在 (文件或目录)
+        if (entityType == FileSystemEntityType.directory) {
           await _sendDirectoryListing(request, safePath);
+        } else if (entityType == FileSystemEntityType.file) { // 显式检查文件类型
+          final fileEntity = File(safePath); // 为文件创建 File 对象
+          await _sendFile(request, fileEntity);
         } else {
-          await _sendFile(request, entity);
+          // 处理其他类型 (如果需要，例如 FileSystemEntityType.link) - 可选
+          request.response
+            ..statusCode = HttpStatus.notFound
+            ..write('文件未找到')
+            ..close();
         }
       } else {
         request.response
@@ -120,13 +129,37 @@ class _FileSharingScreenState extends State<FileSharingScreen> {
   }
 
   String? _validatePath(String uriPath) {
-    final decodedPath = Uri.decodeComponent(uriPath);
-    final fullPath = p.join(selectedDirectory!, decodedPath);
-    final normalizedPath = p.normalize(fullPath);
+    print("原始 uriPath: $uriPath");
 
-    if (!p.isWithin(p.normalize(selectedDirectory!), normalizedPath)) {
+    if (uriPath == "/") { // Root path special case - MUST KEEP
+      print("请求根路径 '/', 直接返回 selectedDirectory");
+      print("路径验证成功，返回 selectedDirectory: $selectedDirectory");
+      return selectedDirectory;
+    }
+
+    //  Ensure decodedPath does NOT start with a leading '/'
+    String decodedPath = Uri.decodeComponent(uriPath);
+    if (decodedPath.startsWith('/')) {
+      decodedPath = decodedPath.substring(1); // Remove leading slash if present AFTER decoding
+    }
+    print("decodedPath (leading slash removed): $decodedPath");
+
+
+    final fullPath = p.join(selectedDirectory!, decodedPath);
+    print("fullPath: $fullPath");
+    final normalizedPath = p.normalize(fullPath);
+    print("normalizedPath: $normalizedPath");
+    final normalizedSelectedDir = p.normalize(selectedDirectory!);
+    print("normalizedSelectedDir: $normalizedSelectedDir");
+
+    bool isWithin = p.isWithin(normalizedSelectedDir, normalizedPath);
+    print("p.isWithin(normalizedSelectedDir, normalizedPath): $isWithin");
+
+    if (!isWithin) {
+      print("路径验证失败，返回 null");
       return null;
     }
+    print("路径验证成功，返回 normalizedPath: $normalizedPath");
     return normalizedPath;
   }
 
@@ -146,7 +179,8 @@ class _FileSharingScreenState extends State<FileSharingScreen> {
 
   String _buildFileLink(FileSystemEntity entity, Uri currentUri) {
     final name = p.basename(entity.path);
-    final link = currentUri.resolve(name).toString();
+    // final link = currentUri.resolve(name).toString(); //  生成绝对路径链接
+    final link = name; // 生成相对路径链接
     return '<a href="$link">$name</a><br>';
   }
 

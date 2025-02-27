@@ -1,16 +1,55 @@
 # freeshare
 
-Share Files by HTTP
+**Share Files by HTTP**
+
+Freeshare is an Android app built with Flutter that allows you to share files over HTTP. It sets up an HTTP server on your Android device, enabling easy file transfers between devices in your local network.
+
+## Features
+- Start an HTTP server to serve files from your Android device.
+- Share files easily with others over the local network.
+- Simple and intuitive user interface.
+
+## Screenshots
+
+### Screenshot
+![Tree Screenshot](./screenshot/Download.png)
+
+### Browser Screenshot
+![Browser Screenshot](./screenshot/browser.png)
+
+### Phone Screenshot
+![Phone Screenshot](./screenshot/phone.jpg)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To get started with Freeshare, clone the repository and open the project in your preferred IDE (e.g., Android Studio or VS Code).
 
-A few resources to get you started if this is your first Flutter project:
+### Prerequisites
+- Flutter SDK installed on your machine. If you haven't installed Flutter yet, follow the official documentation to set it up:
+    - [Flutter installation guide](https://docs.flutter.dev/get-started/install)
+- An Android device or emulator for testing.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/freeshare.git
+   cd freeshare
+   ```
+Install dependencies:
+```
+flutter pub get
+```
+
+Run the app on your Android device or emulator:
+```
+flutter run
+```
+
+## Usage
+Open the app on your Android device.
+The app will automatically start an HTTP server on the local network.
+Use a browser or file manager on another device to access the shared files by entering the provided server URL.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
